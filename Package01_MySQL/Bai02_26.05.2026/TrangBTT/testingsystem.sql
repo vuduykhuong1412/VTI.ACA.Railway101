@@ -1,3 +1,5 @@
+-- 26.05
+
 DROP DATABASE testingsystem;
 create database testing_system;
 create table department(
