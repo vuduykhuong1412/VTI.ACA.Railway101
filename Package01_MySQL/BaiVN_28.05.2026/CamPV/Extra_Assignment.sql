@@ -49,7 +49,8 @@ SELECT *
 FROM Trainee
 ORDER BY ET_IQ DESC;
 -- 6 Top 3 trainee cao nhất
-SELECT *
+SELECT *,
+       (ET_IQ + ET_Gmath + ET_English) AS TotalScore
 FROM Trainee
-ORDER BY ET_IQ DESC
+ORDER BY TotalScore DESC
 LIMIT 3;
