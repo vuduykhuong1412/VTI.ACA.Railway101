@@ -1,168 +1,210 @@
--- Bai 1: Account kem Department
+USE TestingSystem;
+
+-- Exercise 1 - Question 1
 SELECT 
     a.AccountID,
+    a.Email,
+    a.Username,
     a.FullName,
+    d.DepartmentID,
     d.DepartmentName
 FROM `Account` a
 JOIN Department d ON a.DepartmentID = d.DepartmentID;
 
--- Bai 2: Account kem Position
+-- Question 2
+SELECT *
+FROM `Account`
+WHERE CreateDate > '2010-12-20';
+
+-- Question 3
 SELECT 
     a.AccountID,
+    a.Email,
+    a.Username,
     a.FullName,
     p.PositionName
 FROM `Account` a
-JOIN `Position` p ON a.PositionID = p.PositionID;
+JOIN `Position` p ON a.PositionID = p.PositionID
+WHERE p.PositionName = 'Dev';
 
--- Bai 3: Account kem Department va Position
+-- Question 4
 SELECT 
-    a.AccountID,
-    a.FullName,
+    d.DepartmentID,
     d.DepartmentName,
-    p.PositionName
-FROM `Account` a
-JOIN Department d ON a.DepartmentID = d.DepartmentID
-JOIN `Position` p ON a.PositionID = p.PositionID;
+    COUNT(a.AccountID) AS Total_Account
+FROM Department d
+JOIN `Account` a ON d.DepartmentID = a.DepartmentID
+GROUP BY d.DepartmentID, d.DepartmentName
+HAVING COUNT(a.AccountID) > 3;
 
--- Bai 4: Group va nguoi tao group
+-- Question 5
+SELECT 
+    q.QuestionID,
+    q.Content,
+    COUNT(eq.ExamID) AS Total_Exam
+FROM Question q
+JOIN ExamQuestion eq ON q.QuestionID = eq.QuestionID
+GROUP BY q.QuestionID, q.Content
+HAVING COUNT(eq.ExamID) = (
+    SELECT MAX(Question_Count)
+    FROM (
+        SELECT COUNT(ExamID) AS Question_Count
+        FROM ExamQuestion
+        GROUP BY QuestionID
+    ) AS temp
+);
+
+-- Question 6
+SELECT 
+    cq.CategoryID,
+    cq.CategoryName,
+    COUNT(q.QuestionID) AS Total_Question
+FROM CategoryQuestion cq
+LEFT JOIN Question q ON cq.CategoryID = q.CategoryID
+GROUP BY cq.CategoryID, cq.CategoryName;
+
+-- Question 7
+SELECT 
+    q.QuestionID,
+    q.Content,
+    COUNT(eq.ExamID) AS Total_Exam
+FROM Question q
+LEFT JOIN ExamQuestion eq ON q.QuestionID = eq.QuestionID
+GROUP BY q.QuestionID, q.Content;
+
+-- Question 8
+SELECT 
+    q.QuestionID,
+    q.Content
+FROM Question q
+LEFT JOIN Answer a ON q.QuestionID = a.QuestionID
+WHERE a.AnswerID IS NULL;
+
+-- Question 9
 SELECT 
     g.GroupID,
     g.GroupName,
-    a.FullName AS CreatorName
+    COUNT(ga.AccountID) AS Total_Account
 FROM `Group` g
-JOIN `Account` a ON g.CreatorID = a.AccountID;
+LEFT JOIN GroupAccount ga ON g.GroupID = ga.GroupID
+GROUP BY g.GroupID, g.GroupName;
 
--- Bai 5: Group va thanh vien trong group
+-- Question 10
 SELECT 
-    g.GroupName,
-    a.FullName,
-    ga.JoinDate
-FROM `Group` g
-JOIN GroupAccount ga ON g.GroupID = ga.GroupID
-JOIN `Account` a ON ga.AccountID = a.AccountID;
+    p.PositionID,
+    p.PositionName,
+    COUNT(a.AccountID) AS Total_Account
+FROM `Position` p
+LEFT JOIN `Account` a ON p.PositionID = a.PositionID
+GROUP BY p.PositionID, p.PositionName
+HAVING COUNT(a.AccountID) = (
+    SELECT MIN(Position_Count)
+    FROM (
+        SELECT COUNT(a2.AccountID) AS Position_Count
+        FROM `Position` p2
+        LEFT JOIN `Account` a2 ON p2.PositionID = a2.PositionID
+        GROUP BY p2.PositionID
+    ) AS temp
+);
 
--- Bai 6: Group tham gia truoc ngay 20/12/2019
-SELECT DISTINCT 
-    g.GroupName
-FROM `Group` g
-JOIN GroupAccount ga ON g.GroupID = ga.GroupID
-WHERE ga.JoinDate < '2019-12-20';
-
--- Bai 7: Question kem Category
-SELECT 
-    q.QuestionID,
-    q.Content,
-    cq.CategoryName
-FROM Question q
-JOIN CategoryQuestion cq ON q.CategoryID = cq.CategoryID;
-
--- Bai 8: Question kem TypeQuestion
-SELECT 
-    q.QuestionID,
-    q.Content,
-    tq.TypeName
-FROM Question q
-JOIN TypeQuestion tq ON q.TypeID = tq.TypeID;
-
--- Bai 9: Question kem Category, Type va nguoi tao
-SELECT 
-    q.Content,
-    cq.CategoryName,
-    tq.TypeName,
-    a.FullName AS CreatorName
-FROM Question q
-JOIN CategoryQuestion cq ON q.CategoryID = cq.CategoryID
-JOIN TypeQuestion tq ON q.TypeID = tq.TypeID
-JOIN `Account` a ON q.CreatorID = a.AccountID;
-
--- Bai 10: Question va Answer
-SELECT 
-    q.Content AS QuestionContent,
-    an.Content AS AnswerContent,
-    an.isCorrect
-FROM Question q
-JOIN Answer an ON q.QuestionID = an.QuestionID;
-
--- Bai 11: Exam kem Category
-SELECT 
-    e.ExamID,
-    e.`Code`,
-    e.Title,
-    cq.CategoryName
-FROM Exam e
-JOIN CategoryQuestion cq ON e.CategoryID = cq.CategoryID;
-
--- Bai 12: Exam kem nguoi tao
-SELECT 
-    e.`Code`,
-    e.Title,
-    a.FullName AS CreatorName
-FROM Exam e
-JOIN `Account` a ON e.CreatorID = a.AccountID;
-
--- Bai 13: Exam gom nhung Question nao
-SELECT 
-    e.`Code`,
-    e.Title,
-    q.Content AS QuestionContent
-FROM Exam e
-JOIN ExamQuestion eq ON e.ExamID = eq.ExamID
-JOIN Question q ON eq.QuestionID = q.QuestionID;
-
--- Bai 14: Tat ca Department, co account hoac khong
+-- Question 11
 SELECT 
     d.DepartmentID,
     d.DepartmentName,
-    a.FullName
-FROM Department d
-LEFT JOIN `Account` a ON d.DepartmentID = a.DepartmentID;
-
--- Bai 15: Department chua co account
-SELECT 
-    d.DepartmentID,
-    d.DepartmentName
+    SUM(CASE WHEN p.PositionName = 'Dev' THEN 1 ELSE 0 END) AS Total_Dev,
+    SUM(CASE WHEN p.PositionName = 'Test' THEN 1 ELSE 0 END) AS Total_Test,
+    SUM(CASE WHEN p.PositionName = 'Scrum Master' THEN 1 ELSE 0 END) AS Total_Scrum_Master,
+    SUM(CASE WHEN p.PositionName = 'PM' THEN 1 ELSE 0 END) AS Total_PM
 FROM Department d
 LEFT JOIN `Account` a ON d.DepartmentID = a.DepartmentID
-WHERE a.AccountID IS NULL;
+LEFT JOIN `Position` p ON a.PositionID = p.PositionID
+GROUP BY d.DepartmentID, d.DepartmentName;
 
--- Bai 16: Tat ca Group, co thanh vien hoac khong
-SELECT 
-    g.GroupID,
-    g.GroupName,
+-- Question 12
+SELECT DISTINCT
+    a.AccountID,
+    a.Email,
+    a.Username,
     a.FullName
-FROM `Group` g
-LEFT JOIN GroupAccount ga ON g.GroupID = ga.GroupID
-LEFT JOIN `Account` a ON ga.AccountID = a.AccountID;
+FROM `Account` a
+LEFT JOIN `Group` g ON a.AccountID = g.CreatorID
+LEFT JOIN Question q ON a.AccountID = q.CreatorID
+LEFT JOIN Exam e ON a.AccountID = e.CreatorID
+WHERE g.CreatorID IS NOT NULL
+   OR q.CreatorID IS NOT NULL
+   OR e.CreatorID IS NOT NULL;
 
--- Bai 17: Group chua co thanh vien
+-- Question 13
+SELECT 
+    tq.TypeID,
+    tq.TypeName,
+    COUNT(q.QuestionID) AS Total_Question
+FROM TypeQuestion tq
+LEFT JOIN Question q ON tq.TypeID = q.TypeID
+GROUP BY tq.TypeID, tq.TypeName;
+
+-- Question 14
 SELECT 
     g.GroupID,
     g.GroupName
 FROM `Group` g
 LEFT JOIN GroupAccount ga ON g.GroupID = ga.GroupID
-WHERE ga.GroupID IS NULL;
+WHERE ga.AccountID IS NULL;
 
--- Bai 18: UNION DepartmentName va GroupName
-SELECT DepartmentName AS Name
-FROM Department
+-- Question 15
+SELECT 
+    q.QuestionID,
+    q.Content
+FROM Question q
+LEFT JOIN Answer a ON q.QuestionID = a.QuestionID
+WHERE a.AnswerID IS NULL;
+
+-- Question 16
+SELECT 
+    q.QuestionID,
+    q.Content
+FROM Question q
+LEFT JOIN Answer a ON q.QuestionID = a.QuestionID
+WHERE a.AnswerID IS NULL;
+
+-- Exercise 2 - Question 17c
+SELECT 
+    a.AccountID,
+    a.Email,
+    a.Username,
+    a.FullName
+FROM `Account` a
+JOIN GroupAccount ga ON a.AccountID = ga.AccountID
+WHERE ga.GroupID = 1
 
 UNION
 
-SELECT GroupName AS Name
-FROM `Group`;
-
--- Bai 19: UNION ALL DepartmentName va GroupName
-SELECT DepartmentName AS Name
-FROM Department
-
-UNION ALL
-
-SELECT GroupName AS Name
-FROM `Group`;
-
--- Bai 20: CROSS JOIN Department va Position
 SELECT 
-    d.DepartmentName,
-    p.PositionName
-FROM Department d
-CROSS JOIN `Position` p;
+    a.AccountID,
+    a.Email,
+    a.Username,
+    a.FullName
+FROM `Account` a
+JOIN GroupAccount ga ON a.AccountID = ga.AccountID
+WHERE ga.GroupID = 2;
+
+-- Exercise 2 - Question 18c
+SELECT 
+    g.GroupID,
+    g.GroupName,
+    COUNT(ga.AccountID) AS Total_Member
+FROM `Group` g
+JOIN GroupAccount ga ON g.GroupID = ga.GroupID
+GROUP BY g.GroupID, g.GroupName
+HAVING COUNT(ga.AccountID) > 5
+
+UNION
+
+SELECT 
+    g.GroupID,
+    g.GroupName,
+    COUNT(ga.AccountID) AS Total_Member
+FROM `Group` g
+LEFT JOIN GroupAccount ga ON g.GroupID = ga.GroupID
+GROUP BY g.GroupID, g.GroupName
+HAVING COUNT(ga.AccountID) < 7;
