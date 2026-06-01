@@ -60,6 +60,14 @@ CREATE TABLE Exam (
     CreateDate      DATE NOT NULL
 );
 
+ALTER TABLE `Group`
+ADD CONSTRAINT FK_Group_Creator 
+FOREIGN KEY (CreatorID) REFERENCES `Account`(AccountID) ON DELETE CASCADE;
+
+ALTER TABLE Exam
+ADD CONSTRAINT FK_Exam_Creator 
+FOREIGN KEY (CreatorID) REFERENCES `Account`(AccountID) ON DELETE CASCADE;
+
 INSERT INTO Exam (`Code`, Title, CategoryID, Duration, CreatorID, CreateDate) 
 VALUES 
 ('VTI001', 'De thi Java',   1, 60, 1, '2019-10-10'),
