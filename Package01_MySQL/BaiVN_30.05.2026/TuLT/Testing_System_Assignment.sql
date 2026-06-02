@@ -37,22 +37,6 @@ JOIN `Account` a ON d.DepartmentID = a.DepartmentID
 GROUP BY d.DepartmentID, d.DepartmentName
 HAVING COUNT(a.AccountID) > 3;
 
--- Question 5
-SELECT 
-    q.QuestionID,
-    q.Content,
-    COUNT(eq.ExamID) AS Total_Exam
-FROM Question q
-JOIN ExamQuestion eq ON q.QuestionID = eq.QuestionID
-GROUP BY q.QuestionID, q.Content
-HAVING COUNT(eq.ExamID) = (
-    SELECT MAX(Question_Count)
-    FROM (
-        SELECT COUNT(ExamID) AS Question_Count
-        FROM ExamQuestion
-        GROUP BY QuestionID
-    ) AS temp
-);
 
 -- Question 6
 SELECT 
@@ -89,50 +73,6 @@ FROM `Group` g
 LEFT JOIN GroupAccount ga ON g.GroupID = ga.GroupID
 GROUP BY g.GroupID, g.GroupName;
 
--- Question 10
-SELECT 
-    p.PositionID,
-    p.PositionName,
-    COUNT(a.AccountID) AS Total_Account
-FROM `Position` p
-LEFT JOIN `Account` a ON p.PositionID = a.PositionID
-GROUP BY p.PositionID, p.PositionName
-HAVING COUNT(a.AccountID) = (
-    SELECT MIN(Position_Count)
-    FROM (
-        SELECT COUNT(a2.AccountID) AS Position_Count
-        FROM `Position` p2
-        LEFT JOIN `Account` a2 ON p2.PositionID = a2.PositionID
-        GROUP BY p2.PositionID
-    ) AS temp
-);
-
--- Question 11
-SELECT 
-    d.DepartmentID,
-    d.DepartmentName,
-    SUM(CASE WHEN p.PositionName = 'Dev' THEN 1 ELSE 0 END) AS Total_Dev,
-    SUM(CASE WHEN p.PositionName = 'Test' THEN 1 ELSE 0 END) AS Total_Test,
-    SUM(CASE WHEN p.PositionName = 'Scrum Master' THEN 1 ELSE 0 END) AS Total_Scrum_Master,
-    SUM(CASE WHEN p.PositionName = 'PM' THEN 1 ELSE 0 END) AS Total_PM
-FROM Department d
-LEFT JOIN `Account` a ON d.DepartmentID = a.DepartmentID
-LEFT JOIN `Position` p ON a.PositionID = p.PositionID
-GROUP BY d.DepartmentID, d.DepartmentName;
-
--- Question 12
-SELECT DISTINCT
-    a.AccountID,
-    a.Email,
-    a.Username,
-    a.FullName
-FROM `Account` a
-LEFT JOIN `Group` g ON a.AccountID = g.CreatorID
-LEFT JOIN Question q ON a.AccountID = q.CreatorID
-LEFT JOIN Exam e ON a.AccountID = e.CreatorID
-WHERE g.CreatorID IS NOT NULL
-   OR q.CreatorID IS NOT NULL
-   OR e.CreatorID IS NOT NULL;
 
 -- Question 13
 SELECT 
