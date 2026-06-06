@@ -1,0 +1,58 @@
+-- câu 1
+CREATE VIEW View_Sale_Employees AS
+SELECT a.*
+FROM Account a
+JOIN Department d ON a.DepartmentID = d.DepartmentID
+WHERE d.DepartmentName = 'Sale';
+
+SELECT * FROM View_Sale_Employees;
+-- câu 2
+CREATE VIEW View_Max_Group_Account AS
+SELECT a.AccountID,
+       a.FullName,
+       COUNT(ga.GroupID) AS SoLuongGroup
+FROM Account a
+JOIN GroupAccount ga ON a.AccountID = ga.AccountID
+GROUP BY a.AccountID, a.FullName
+HAVING COUNT(ga.GroupID) = (
+    SELECT MAX(SoLuongGroup)
+    FROM (
+        SELECT COUNT(GroupID) AS SoLuongGroup
+        FROM GroupAccount
+        GROUP BY AccountID
+    ) AS Temp
+);
+
+-- câu 3
+CREATE VIEW View_Long_Question AS
+SELECT *
+FROM Question
+WHERE LENGTH(Content) > 300;
+
+SELECT * FROM View_Long_Question;
+
+-- câu 4
+CREATE VIEW View_Max_Employee_Department AS
+SELECT d.DepartmentID,
+       d.DepartmentName,
+       COUNT(a.AccountID) AS SoLuongNhanVien
+FROM Department d
+JOIN Account a ON d.DepartmentID = a.DepartmentID
+GROUP BY d.DepartmentID, d.DepartmentName
+HAVING COUNT(a.AccountID) = (
+    SELECT MAX(SoLuongNV)
+    FROM (
+        SELECT COUNT(AccountID) AS SoLuongNV
+        FROM Account
+        GROUP BY DepartmentID
+    ) AS Temp
+);
+
+-- câu 5
+CREATE VIEW View_Question_Nguyen AS
+SELECT q.*
+FROM Question q
+JOIN Account a ON q.CreatorID = a.AccountID
+WHERE a.FullName LIKE 'Nguyễn%';
+
+SELECT * FROM View_Question_Nguyen;
