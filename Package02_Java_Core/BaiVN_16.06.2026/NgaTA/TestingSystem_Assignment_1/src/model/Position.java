@@ -1,0 +1,32 @@
+package model;
+
+import common.enums.PositionName;
+
+public class Position {
+    int positionId;
+    PositionName positionName;
+
+    public Position() {
+    }
+
+    public Position(int positionId, PositionName positionName) {
+        this.positionId = positionId;
+        this.positionName = positionName;
+    }
+
+    public int getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(int positionId) {
+        this.positionId = positionId;
+    }
+
+    public PositionName getPositionName() {
+        return positionName;
+    }
+
+    public void setPositionName(PositionName positionName) {
+        this.positionName = positionName;
+    }
+}
