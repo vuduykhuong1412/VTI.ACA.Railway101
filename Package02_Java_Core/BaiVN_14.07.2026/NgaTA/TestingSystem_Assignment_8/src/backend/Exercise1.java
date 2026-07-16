@@ -2,8 +2,7 @@ package backend;
 
 import entity.Student;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 
 public class Exercise1 {
 
@@ -124,6 +123,41 @@ public class Exercise1 {
             if (count > 1) {
                 System.out.println(s1);
             }
+        }
+    }
+
+    public void question2() {
+        System.out.println();
+        Stack<String> stack = new Stack<>();
+
+        stack.push("Nguyễn Văn Nam");
+        stack.push("Nguyễn Văn Huyên");
+        stack.push("Trần Văn Nam");
+        stack.push("Nguyễn Văn A");
+
+        System.out.println("===== Stack =====");
+        printStack(stack);
+        System.out.println();
+        Queue<String> queue = new LinkedList<>();
+
+        queue.offer("Nguyễn Văn Nam");
+        queue.offer("Nguyễn Văn Huyên");
+        queue.offer("Trần Văn Nam");
+        queue.offer("Nguyễn Văn A");
+
+        System.out.println("===== Queue =====");
+        printQueue(queue);
+    }
+
+    public void printStack(Stack<String> stack) {
+        while (!stack.isEmpty()) {
+            System.out.println(stack.pop());
+        }
+    }
+
+    public void printQueue(Queue<String> queue) {
+        while (!queue.isEmpty()) {
+            System.out.println(queue.poll());
         }
     }
 }
