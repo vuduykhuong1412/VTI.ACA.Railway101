@@ -83,6 +83,3 @@ CREATE TABLE Exam (
                       Duration				TINYINT UNSIGNED NOT NULL DEFAULT 45,
                       CreateDate				DATETIME DEFAULT NOW() -- Cannot update this field
 );
-
-ALTER TABLE `TestingSystem`.`Group` DROP COLUMN `name`;
-ALTER TABLE `TestingSystem`.`Group` DROP COLUMN `create_date`;
