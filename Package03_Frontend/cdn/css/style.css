@@ -1,0 +1,18 @@
+.selected {
+  color: red;
+  background-color: yellow;
+}
+
+.form-submit {
+  padding: 10px 20px;
+  border: none;
+}
+
+.form-title,
+.form-body {
+  font-weight: bold;
+  padding: 5px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
